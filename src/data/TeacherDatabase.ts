@@ -61,13 +61,22 @@ export class TeacherDatabase {
 
      async getAll(): Promise<Teacher[]>{
         const results: any = await this.connection(`Teacher`).select()
+        
         const teachersResult: Teacher[] = []
 
         for (let result of results) {
-            const teachers = new Teacher(result.id, result.name, result.email, formatDate(result.birthdate), result.classId, result.expertise)
+            const teachers = new Teacher(result.id, result.name, result.email, formatDate(result.birthdate), result.class_id, result.expertise)
             teachersResult.push(teachers)
         }
 
         return (teachersResult)
+     }
+
+     async changeClass (id: string, classId: string): Promise<void> {
+        await this.connection(`Teacher`)
+            .where('id', '=', id)
+            .update({
+                class_id: classId
+            })
      }
 }

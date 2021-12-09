@@ -32,10 +32,34 @@ export class ClassDatabase {
          const classResult: ClassFormat[] = []
 
          for (let result of results) {
-            const classes = new ClassFormat(result.id, result.name)
+            const classes = new ClassFormat(result.id, result.name, result.module)
             classResult.push(classes)
         }
 
         return (classResult)
+     }
+
+     async getActiveClass (){
+        const results: any = await this.connection('Class').select().where('module', "<>", "0")
+        const classResult: ClassFormat[] = []
+
+        for (let result of results) {
+           const classes = new ClassFormat(result.id, result.name, result.module)
+           classResult.push(classes)
+       }
+
+       return (classResult)
+     }
+
+     async changeModule (id: string, module: string){
+         if (module !== "1" && module !== "2" && module !== "3" && module !== "4" && module !== "5" && module !== "6" && module !== "0"){
+             throw new Error("Modulo não válido")
+         }
+
+        await this.connection('Class')
+         .where('id', '=', id)
+         .update({
+             module: module
+         })
      }
 }
