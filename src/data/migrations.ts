@@ -16,7 +16,7 @@ const createTables = () => connection
       name VARCHAR(255) NOT NULL,
       email VARCHAR(255) NOT NULL UNIQUE,
       birthdate DATE NOT NULL,
-      class_id VARCHAR(255) NOT NULL,
+      classId VARCHAR(255) NOT NULL,
       FOREIGN KEY (class_id) REFERENCES Class(id)
    );
 
