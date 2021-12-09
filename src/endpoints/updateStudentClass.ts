@@ -1,5 +1,4 @@
 import { Request, Response } from "express"
-import connection from "../connection"
 import { StudentsDatabase } from "../data/StudentsDatabase"
 
 const updateStudentClass = async (req: Request, res: Response) => {

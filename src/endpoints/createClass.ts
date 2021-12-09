@@ -7,7 +7,7 @@ export default async function createClass (req: Request, res: Response): Promise
         const {name} = req.body
         const classId = Date.now().toString(36) + Math.random().toString(36).substr(2);
         const classDB = new ClassDatabase()
-        const newClass = new ClassFormat(classId, name)
+        const newClass = new ClassFormat(classId, name, "0")
 
         await classDB.create(newClass)
 
