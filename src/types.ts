@@ -65,7 +65,8 @@ export class Teacher extends User {
 export class ClassFormat {
     constructor(
         private id: string,
-        private name: string
+        private name: string,
+        private module: string
     ){}
 
     public getId(): string{
@@ -74,6 +75,10 @@ export class ClassFormat {
 
     public getName(): string{
         return this.name
+    }
+
+    public getModule(): string{
+        return this.module
     }
 }
 
