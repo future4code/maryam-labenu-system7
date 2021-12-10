@@ -62,4 +62,22 @@ export class ClassDatabase {
              module: module
          })
      }
+
+    async getPersons (classId: string){
+        const teachers: any = await this.connection(`Teacher`)
+            .where(`Teacher.class_id`, '=', classId)
+            .select('id', 'name')
+        
+        const students: any = await this.connection("Student")
+            .where("Student.classId", '=', classId)
+            .select('id', 'name')
+        
+        const persons = {
+            teachers: teachers,
+            students: students
+        }
+
+        return (persons)
+            
+    }
 }

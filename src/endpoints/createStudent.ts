@@ -23,7 +23,6 @@ export const createStudent = async (req: Request, res: Response) => {
 
         await sdb.create(student)
 
-        console.log({student})
         res.status(201).send('Estudante criado com sucesso!');
 
 

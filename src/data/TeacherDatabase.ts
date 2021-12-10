@@ -41,31 +41,63 @@ export class TeacherDatabase {
             return (Date.now().toString(36) + Math.random().toString(36).substr(2))
         }
 
+        const expertisesOnList = await this.connection('Expertise').select()
+
         for (let exp of expertises) {
-            const expertiseID = expertiseId()
+            const index = expertisesOnList.findIndex((element) => element.name.toUpperCase() === exp.toUpperCase())
+            let expertiseID: string
 
-            await this.connection('Expertise')
-                .insert({
-                    id: expertiseID,
-                    name: exp
-                })
+            if (index === -1){
+                expertiseID = expertiseId()
 
-            await this.connection('Teacher_expertise')
-                .insert({
-                    id: teacherExpertiseId(),
-                    teacher_id: teacher.getId(),
-                    expertise_id: expertiseID
-                })
+                await this.connection('Expertise')
+                    .insert({
+                        id: expertiseID,
+                        name: exp
+                    })
+
+                await this.connection('Teacher_expertise')
+                    .insert({
+                        id: teacherExpertiseId(),
+                        teacher_id: teacher.getId(),
+                        expertise_id: expertiseID
+                    })
+            } else {
+                expertiseID = expertisesOnList[index].id
+
+                await this.connection('Teacher_expertise')
+                    .insert({
+                        id: teacherExpertiseId(),
+                        teacher_id: teacher.getId(),
+                        expertise_id: expertiseID
+                    })
+            }
+            
         }
     }
 
     async getAll(): Promise<Teacher[]> {
-        const results: any = await this.connection(`Teacher`).select()
+        const results: any = await this.connection(`Teacher`)
+            .join('Class', 'Class.id', '=', 'Teacher.class_id')
+            .select(`Teacher.id as id`, `Teacher.name as name`, `Teacher.email as email`, `Teacher.birthdate as birthdate`, 'Class.name as class')
+
+        const expertises: any = await this.connection(`Teacher`)
+            .join('Teacher_expertise', `Teacher.id`, '=', 'Teacher_expertise.teacher_id')
+            .join('Expertise', 'Expertise.id', '=', 'Teacher_expertise.expertise_id')
+            .select(`Teacher.id as id`, 'Expertise.name as expertise')
 
         const teachersResult: Teacher[] = []
 
         for (let result of results) {
-            const teachers = new Teacher(result.id, result.name, result.email, formatDate(result.birthdate), result.class_id, result.expertise)
+            let expertisesList = []
+
+            for (let exp of expertises){
+                if (result.id === exp.id){
+                    expertisesList.push(exp.expertise)
+                }
+            }
+
+            const teachers = new Teacher(result.id, result.name, result.email, formatDate(result.birthdate), result.class, expertisesList)
             teachersResult.push(teachers)
         }
 
@@ -78,5 +110,45 @@ export class TeacherDatabase {
             .update({
                 class_id: classId
             })
+    }
+
+    async getTeacherByExpertise (expertise: string) {
+        const results: any = await this.connection(`Teacher`)
+            .join('Class', 'Class.id', '=', 'Teacher.class_id')
+            .select(`Teacher.id as id`, `Teacher.name as name`, `Teacher.email as email`, `Teacher.birthdate as birthdate`, 'Class.name as class')
+
+        const expertises: any = await this.connection(`Teacher`)
+            .join('Teacher_expertise', `Teacher.id`, '=', 'Teacher_expertise.teacher_id')
+            .join('Expertise', 'Expertise.id', '=', 'Teacher_expertise.expertise_id')
+            .select(`Teacher.id as id`, 'Expertise.name as expertise')
+
+        const teachersResult: any = []
+
+        for (let result of results) {
+            let expertisesList = []
+
+            for (let exp of expertises){
+                if (result.id === exp.id){
+                    expertisesList.push(exp.expertise)
+                }
+            }
+
+            const teachers = new Teacher(result.id, result.name, result.email, formatDate(result.birthdate), result.class, expertisesList)
+            teachersResult.push(teachers)
+        }
+
+
+        let teachersExpertise = []
+
+        for (let teach of teachersResult){
+            const index = teach.expertise.findIndex((element) => element === expertise)
+            
+            if (index !== -1){
+                teachersExpertise.push(teach)
+            }
+        }
+
+        return (teachersExpertise)
+
     }
 }
