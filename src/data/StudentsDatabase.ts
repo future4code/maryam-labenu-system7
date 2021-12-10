@@ -60,7 +60,7 @@ export class StudentsDatabase {
     }
 
     async getStudentByID(name: string): Promise<Students[]> {
-        const results = await this.connection("Student").where({ name })
+        const results = await this.connection("Student").where('name', "LIKE", `%${name}%`)
         const studentsResult: Students[] = []
 
         for (let result of results) {
