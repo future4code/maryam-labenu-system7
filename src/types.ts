@@ -43,6 +43,22 @@ export class Students extends User {
     public getHobbies(): string[] {
         return this.hobbies
     }
+
+    // public getId(): string {
+    //     return this.id
+    // }
+    // public getName(): string {
+    //     return this.name
+    // }
+    // public getEmail(): string {
+    //     return this.email
+    // }
+    // public getBirthdate(): string {
+    //     return this.birthdate
+    // }
+    // public getClassId(): string {
+    //     return this.classId
+    // }
 }
 
 export class Teacher extends User {

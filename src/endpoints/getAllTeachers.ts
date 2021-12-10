@@ -1,7 +1,5 @@
 import { Request, Response } from "express"
-// import { connection } from "../connection"
 import { Teacher } from "../types"
-import formatDate from "../services/formatDate"
 import { TeacherDatabase } from "../data/TeacherDatabase"
 
 export const getAllTeachers = async (req: Request, res: Response) => {
@@ -16,9 +14,7 @@ export const getAllTeachers = async (req: Request, res: Response) => {
 
     } catch (error) {
         if (res.statusCode === 200)
-            // res.status(500).send("Sistema temporariamente indisponível. Tente novamente mais tarde!")
-            res.send(error.sqlMessage || error.message)
-
+            res.status(500).send("Sistema temporariamente indisponível. Tente novamente mais tarde!")
         else
             res.send(error.sqlMessage || error.message)
     }

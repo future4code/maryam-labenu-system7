@@ -11,18 +11,18 @@ export class TeacherDatabase {
     private connection: any = knex({
         client: "mysql",
         connection: {
-           host: process.env.DB_HOST,
-           port: 3306,
-           user: process.env.DB_USER,
-           password: process.env.DB_PASSWORD,
-           database: process.env.DB_SCHEMA,
-           multipleStatements: true
+            host: process.env.DB_HOST,
+            port: 3306,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_SCHEMA,
+            multipleStatements: true
         }
-     })
+    })
 
-     async create(teacher: Teacher){
-         
-         await this.connection(`Teacher`)
+    async create(teacher: Teacher) {
+
+        await this.connection(`Teacher`)
             .insert({
                 id: teacher.getId(),
                 name: teacher.getName(),
@@ -34,34 +34,34 @@ export class TeacherDatabase {
         const expertises = teacher.getExpertise()
 
         const expertiseId = (): string => {
-            return(Date.now().toString(36) + Math.random().toString(36).substr(2))
+            return (Date.now().toString(36) + Math.random().toString(36).substr(2))
         }
 
         const teacherExpertiseId = (): string => {
-            return(Date.now().toString(36) + Math.random().toString(36).substr(2))
+            return (Date.now().toString(36) + Math.random().toString(36).substr(2))
         }
 
-        for (let exp of expertises){
-            const expertiseID =  expertiseId()
+        for (let exp of expertises) {
+            const expertiseID = expertiseId()
 
             await this.connection('Expertise')
                 .insert({
                     id: expertiseID,
                     name: exp
                 })
-            
+
             await this.connection('Teacher_expertise')
                 .insert({
                     id: teacherExpertiseId(),
-                    teacher_id: teacher.getId(), 
+                    teacher_id: teacher.getId(),
                     expertise_id: expertiseID
                 })
         }
-     }
+    }
 
-     async getAll(): Promise<Teacher[]>{
+    async getAll(): Promise<Teacher[]> {
         const results: any = await this.connection(`Teacher`).select()
-        
+
         const teachersResult: Teacher[] = []
 
         for (let result of results) {
@@ -70,13 +70,13 @@ export class TeacherDatabase {
         }
 
         return (teachersResult)
-     }
+    }
 
-     async changeClass (id: string, classId: string): Promise<void> {
+    async changeClass(id: string, classId: string): Promise<void> {
         await this.connection(`Teacher`)
             .where('id', '=', id)
             .update({
                 class_id: classId
             })
-     }
+    }
 }
